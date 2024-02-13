@@ -3,7 +3,7 @@ Golang implementation of a method of downloading websites - built for our Senior
 
 This project is ment for education purposes as a tool in order to develop a peer to peer web cache capability. The repository to that one is currently private, though this tool seems universally useful so I felt should be seperate and public.
 
-Usage: webDownloader https://www.<website>
+Usage: webDownloader {Website URL}
 
 Will contain more options in potential future releases
 
