@@ -1,4 +1,4 @@
-module webDownloader
+module github.com/alexkefer/webDownloader
 
 go 1.21.6
 
