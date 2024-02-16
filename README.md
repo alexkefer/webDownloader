@@ -13,7 +13,7 @@ Will contain more options in potential future releases
 - [x] Identifies assets
 - [X] Downloads Assets
 - [X] Organizes and saves assets
-- [ ] Replaces source location with local path
+- [X] Replaces source location with local path
 - [ ] Index's and saves table of downloaded webpages
 - [ ] Connects with the P2P Senior Project Peer To Peer Webcache
 - [ ] Handles robots.txt to avoid downloading unauthorized information
