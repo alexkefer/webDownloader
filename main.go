@@ -21,10 +21,14 @@ func main() {
 	fmt.Println("Downloading: " + url)
 	//Download Function Here
 	html := downloadHTML(url)
+	if html == "" {
+		fmt.Println("Error downloading page")
+		return
+	}
 	fmt.Println("Page Location: " + parsePageLocation(url))
 	//Save Location Function Here
-	html = findAndReplaceLinks(html, url)
-	makeFileLocation("savedPages/" + parsePageLocation(url))
+	html = DownloadAllAssets(url, html)
+	makeFileLocation("./savedPages/" + parsePageLocation(url))
 	fmt.Println("Page Name: " + parsePageName(url))
 	savePage(html, parsePageName(url), parsePageLocation(url), ".html")
 	//Save Page Function Here
@@ -32,9 +36,13 @@ func main() {
 
 func downloadHTML(url string) string {
 	// takes in the URL and returns the MHTML of the page
-	resp, err := http.Get(url)
+	req, _ := http.NewRequest("GET", url, nil)
+	req.Header.Set("User-Agent", "P2PWebCache")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println("Error downloading webpage:", err)
+		fmt.Printf("Error downloading webpage: %s : %s\n", url, err)
 		return ""
 	}
 	defer resp.Body.Close()

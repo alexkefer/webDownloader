@@ -60,8 +60,23 @@ func buildLocalPath(baseURL, assetURL string) string {
 	if strings.HasPrefix(assetURL, "www.") {
 		assetURL = assetURL[4:]
 	}
+	if strings.HasPrefix(assetURL, "//") {
+		assetURL = assetURL[2:]
+	}
 	if strings.HasPrefix(assetURL, "/") {
 		assetURL = assetURL[1:]
 	}
 	return baseURL + "/" + assetURL
+}
+
+func determineAssetType(url string) string {
+	if strings.HasSuffix(url, ".css") {
+		return "css"
+	} else if strings.HasSuffix(url, ".js") {
+		return "js"
+	} else if strings.Contains(url, "/images/") {
+		return "img"
+	}
+
+	return "unknown"
 }
