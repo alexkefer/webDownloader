@@ -23,7 +23,8 @@ func saveAsset(content string, url string, saveLocation string, fileType string)
 	file, err := os.OpenFile(localPath, os.O_RDWR|os.O_CREATE, 0644)
 
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		return
 	}
 	defer file.Close()
 

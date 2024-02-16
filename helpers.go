@@ -42,6 +42,9 @@ func parsePageLocation(url string) string {
 
 func parsePageName(url string) string {
 	// takes in url and returns the name of the page
+	if url[len(url)-1] == '/' {
+		url = url[:len(url)-1]
+	}
 	for i := len(url) - 1; i >= 0; i-- {
 		if url[i] == '/' {
 			url = url[i+1:]

@@ -67,8 +67,10 @@ func DownloadAllAssets(url, htmlContent string) string {
 			switch token.Data {
 			case "link": // Download CSS
 				for _, attr := range token.Attr {
-					if attr.Key == "rel" && strings.Contains(attr.Val, "stylesheet") {
-						if href, ok := getAttributeValue(token, "href"); ok {
+					if href, ok := getAttributeValue(token, "href"); ok {
+						switch detectAssetType(href) {
+						case "css":
+							println(href)
 							link := buildPageUrl(url, href)
 							fmt.Println("Retrieving Asset: " + link)
 							assetInfo := retrieveAsset(link)
@@ -82,7 +84,32 @@ func DownloadAllAssets(url, htmlContent string) string {
 									fileType = ".css"
 								}
 								saveAsset(assetInfo, parsePageName(href), parsePageLocation(link), fileType)
+								attr.Val = buildLocalPath(parsePageLocation(url), parsePageName(href)+fileType)
 							}
+						case "img":
+							println("img")
+							link := buildPageUrl(url, href)
+							fmt.Println("Retrieving Asset: " + link)
+							assetInfo := retrieveAsset(link)
+							if assetInfo != "" {
+								makeFileLocation("savedPages/" + parsePageLocation(link))
+								href = trimLongURL(href)
+								saveAsset(assetInfo, parsePageName(href), parsePageLocation(link), "")
+								attr.Val = buildLocalPath(parsePageLocation(url), parsePageName(href)+"")
+							}
+						case "php":
+							println(href)
+							link := buildPageUrl(url, href)
+							fmt.Println("Retrieving Asset: " + link)
+							assetInfo := retrieveAsset(link)
+							if assetInfo != "" {
+								makeFileLocation("savedPages/" + parsePageLocation(link))
+								href = trimLongURL(href)
+								saveAsset(assetInfo, parsePageName(href), parsePageLocation(link), "")
+								attr.Val = buildLocalPath(parsePageLocation(url), parsePageName(href)+"")
+							}
+						case "js":
+							println("js")
 						}
 					}
 				}
@@ -101,6 +128,20 @@ func DownloadAllAssets(url, htmlContent string) string {
 								fileType = ".js"
 							}
 							saveAsset(assetInfo, parsePageName(attr.Val), parsePageLocation(link), fileType)
+							attr.Val = buildLocalPath(parsePageLocation(url), parsePageName(attr.Val)+fileType)
+						}
+					}
+				}
+			case "img": // Download Images
+				for _, attr := range token.Attr {
+					if attr.Key == "src" {
+						link := buildPageUrl(url, attr.Val)
+						fmt.Println("Retrieving Asset: " + link)
+						assetInfo := retrieveAsset(link)
+						if assetInfo != "" {
+							makeFileLocation("savedPages/" + parsePageLocation(link))
+							saveAsset(assetInfo, parsePageName(attr.Val), parsePageLocation(link), "")
+							attr.Val = buildLocalPath(parsePageLocation(url), parsePageName(attr.Val)+"")
 						}
 					}
 				}
@@ -110,6 +151,21 @@ func DownloadAllAssets(url, htmlContent string) string {
 }
 
 /* Helper Functions */
+
+// using the url from the token, it will determine the asset type (css, php, js, img, etc)
+func detectAssetType(url string) string {
+	if strings.Contains(url, ".css") {
+		return "css"
+	} else if strings.Contains(url, ".js") {
+		return "js"
+	} else if strings.Contains(url, ".php") {
+		return "php"
+	} else if strings.Contains(url, ".jpg") || strings.Contains(url, ".jpeg") || strings.Contains(url, ".png") || strings.Contains(url, ".gif") || strings.Contains(url, ".svg") || strings.Contains(url, ".bmp") || strings.Contains(url, ".webp") || strings.Contains(url, ".ico") {
+		return "img"
+	} else {
+		return "unknown"
+	}
+}
 
 func getAttributeValue(token html.Token, key string) (string, bool) {
 	for _, attr := range token.Attr {
